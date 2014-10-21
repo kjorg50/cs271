@@ -12,6 +12,8 @@ except socket.error:
   sys.exit()
 
 host1 = '54.169.67.45'
+host2 = '54.207.15.207'
+host3 = '54.191.73.92'
 port = 5000
 
 while(True):
@@ -20,7 +22,7 @@ while(True):
 
     #print("Getting time...")
     # Set the whole string
-    s.sendto(msg.encode('utf-8'), (host1, port))
+    s.sendto(msg.encode('utf-8'), (host3, port))
 
     # receive data from time server 1 (data, addr)
     d = s.recvfrom(1024) # buffer size 1024 bytes
