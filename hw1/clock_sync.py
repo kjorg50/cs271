@@ -2,7 +2,8 @@
 # Kyle Jorgensen, CS 271, HW 1, 10/20/14
 
 import socket
-import sys  
+import sys
+import time
 
 try:
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -23,10 +24,12 @@ while(True):
 
     # receive data from time server 1 (data, addr)
     d = s.recvfrom(1024) # buffer size 1024 bytes
-    reply = d[0]
+    reply = d[0].decode("utf-8")
     addr = d[1]
     
-    print ('Server reply : ' + reply.decode("utf-8"))
+    reply_date = float(reply)
+
+    print ('Server reply : ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(reply_date)))
 
   # some problem seding data?
   except socket.error as e:
