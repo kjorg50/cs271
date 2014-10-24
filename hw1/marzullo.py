@@ -1,8 +1,11 @@
 # Kyle Jorgensen, CS 271, HW 1, 10/23/14
 # This code is built upon https://gist.github.com/tai2/3684493
 
-# c.f. http://en.wikipedia.org/wiki/Marzullo%27s_algorithm
 def marzullo_algorithm(ranges):
+  '''
+    Clock synchronization algorithm based on:
+      http://en.wikipedia.org/wiki/Marzullo%27s_algorithm
+  '''
   table = []
   for l,r in ranges:
     table.append((l,-1))

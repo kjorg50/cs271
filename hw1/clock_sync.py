@@ -24,6 +24,8 @@ def sync():
     print ('Failed to create socket')
     sys.exit()
 
+  first = True
+
   while(True):
     try:
       msg = 'time' # this message doesn't matter, it just needs to be non-empty
@@ -105,6 +107,9 @@ def sync():
 
       ############ Outputs ###########
 
+      if(first): # I calculated this value, see report for details
+        print "Number of resynchronizations per minute to keep drift < 1 ms: 2\n"
+        first = False
       print("Current (local) time: " + str(t_send_1) )
       print('Server 1 time       : ' + str(t_server_1) + " | RTT to server1 (sec): " + str(rtt_1))
       # print("RTT to server1 (sec): " + str(rtt_1) )
@@ -150,6 +155,11 @@ def calc_marzullo(ts1, ts2, ts3, ts4, ts5,
   return result
 
 def unix_time(dt):
+  '''
+    Simple function to convert a datetime object into epoch
+    time format (floating point number).
+  '''
+
     epoch = datetime.utcfromtimestamp(0)
     # need the timedelta to offset the values back to normal
     delta = (dt - epoch) + timedelta(hours=7)
