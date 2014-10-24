@@ -101,7 +101,7 @@ def sync():
       update_range = calc_marzullo(t_server_1,t_server_2,t_server_3,t_server_4,t_server_5,
                                    t_round_1,t_round_2,t_round_3,t_round_4,t_round_5)
       update_middle = (update_range[0] + update_range[1])/2
-      t_update = datetime.fromtimestamp(update_middle)
+      t_update = datetime.fromtimestamp(update_middle) 
 
       ############ Outputs ###########
 
@@ -145,12 +145,14 @@ def calc_marzullo(ts1, ts2, ts3, ts4, ts5,
                (unix_time(ts3-rtt3),unix_time(ts3+rtt3)),
                (unix_time(ts4-rtt4),unix_time(ts4+rtt4)),
                (unix_time(ts5-rtt5),unix_time(ts5+rtt5)))
+
   result = marzullo.marzullo_algorithm(test_list)
   return result
 
 def unix_time(dt):
-    epoch = datetime(1970,1,1)
-    delta = dt - epoch
+    epoch = datetime.utcfromtimestamp(0)
+    # need the timedelta to offset the values back to normal
+    delta = (dt - epoch) + timedelta(hours=7)
     return delta.total_seconds()
 
 
