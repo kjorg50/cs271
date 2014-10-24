@@ -1,5 +1,3 @@
-# THIS IS IN PYTHON 2.7
-
 # c.f. http://en.wikipedia.org/wiki/Marzullo%27s_algorithm
 def marzullo_algorithm(ranges):
     table = []
@@ -7,16 +5,12 @@ def marzullo_algorithm(ranges):
         table.append((l,-1))
         table.append((r,+1))
 
-    def cmp(a, b):
-        return (a > b) - (a < b)
-
-    def my_cmp(item):
-        x = item[0]; y = item[1];
-        result = cmp(x, y)
+    def my_cmp(x, y):
+        result = cmp(x[0], y[0])
         if result == 0:
-            result = -cmp(x, y) # to exclude 'pathological overlaps'
+            result = -cmp(x[1], y[1]) # to exclude 'pathological overlaps'
         return result
-    sorted(table, key=my_cmp)
+    table.sort(my_cmp)
 
     best = 0
     cnt = 0
@@ -32,9 +26,9 @@ def test(data_list):
     for data in data_list:
         result = marzullo_algorithm(data['input']) 
         if not result == data['expected']:
-            print('test failed input=', data['input'], 'expected=', data['expected'], 'actual=', result)
+            print 'test failed input=', data['input'], 'expected=', data['expected'], 'actual=', result
             return
-    print('test suceeded')
+    print 'test suceeded'
 
 if __name__ == "__main__":
     test_data_list = (

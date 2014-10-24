@@ -3,7 +3,7 @@
 
 import socket
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 host1 = '54.169.67.45'
 host2 = '54.207.15.207'
@@ -26,11 +26,12 @@ def sync():
 
       # Send the request to the server
       t_send = datetime.now()
-      s.sendto(msg.encode('utf-8'), (host1, port))
+      s.sendto(msg.encode('utf-8'), (host5, port2))
+
+      t_local = datetime.now()
 
       # receive data from time server (data, addr)
       d = s.recvfrom(1024) # buffer size 1024 bytes
-      #t_local = datetime.now()
       t_recv = datetime.now()
 
       # Round trip time (timedelta obj)
@@ -40,12 +41,16 @@ def sync():
       # The time received from the server
       reply = d[0].decode("utf-8")
       reply_float = float(reply)
+      t_server = datetime.fromtimestamp(reply_float)
 
-      print ('Server reply: ' + datetime.fromtimestamp(reply_float).strftime('%Y-%m-%d %H:%M:%S.%f') )
+      # time reported from the server plus RTT/2
+      t_server_corrected = t_server + timedelta(seconds=(rtt/2))
+
+      print ('Server reply: ' + str(t_server) )
       print("RTT: " + str(rtt) )
-      # print("**recv time: " + str(t_recv.timestamp()) )
-      # print("**reply float: " + str(reply_float) )
-      print("Diff: " + str( t_recv.timestamp() - (reply_float + rtt/2)) + '\n')
+      print("**local time: " + str(t_recv) )
+      #print("**reply float: " + str( t_server ) )
+      print("Diff: " + str( (t_local - t_server_corrected).total_seconds() ) + '\n')
       #print("current time: " + str(time.clock_gettime(time.CLOCK_REALTIME)) + " server w/ adj: " 
        #     + str(reply_float + t_round/2))
 
