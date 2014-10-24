@@ -15,6 +15,9 @@ port = 5000
 port2 = 12291 # only to be used with host5
 
 def sync():
+  '''
+    Performs the clock synchronization using my altered Marzullo's algorithm
+  '''
   try:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   except socket.error:
@@ -85,34 +88,42 @@ def sync():
       t_server_5 = datetime.fromtimestamp(reply_float_5)
       t_server_5_corrected = t_server_5 + timedelta(seconds=(rtt_5/2))
 
-      ######## Outputs ########
+      ######## Clock Shifting ########
+
+      # shift each server time backward to make it as if they 
+      # all responded at the same time
+      t_server_2 = t_server_2 - (t_send_2 - t_send_1)
+      t_server_3 = t_server_3 - (t_send_3 - t_send_1)
+      t_server_4 = t_server_4 - (t_send_4 - t_send_1)
+      t_server_5 = t_server_5 - (t_send_5 - t_send_1)
+
+      ##### Marzullo Calculation #####
+      update_range = calc_marzullo(t_server_1,t_server_2,t_server_3,t_server_4,t_server_5,
+                                   t_round_1,t_round_2,t_round_3,t_round_4,t_round_5)
+      update_middle = (update_range[0] + update_range[1])/2
+      t_update = datetime.fromtimestamp(update_middle)
+
+      ############ Outputs ###########
 
       print("Current (local) time: " + str(t_send_1) )
-      print('Server 1 time       : ' + str(t_server_1) )
-      print("RTT to server1 (sec): " + str(rtt_1) )
-      print("Diff 1 (sec)        : " + str( (t_send_1 - t_server_1_corrected).total_seconds() ) +'\n')
+      print('Server 1 time       : ' + str(t_server_1) + " | RTT to server1 (sec): " + str(rtt_1))
+      # print("RTT to server1 (sec): " + str(rtt_1) )
 
-      print("Current (local) time: " + str(t_send_2) )
-      print('Server 2 time       : ' + str(t_server_2) )
-      print("RTT to server2 (sec): " + str(rtt_2) )
-      print("Diff 2 (sec)        : " + str( (t_send_2 - t_server_2_corrected).total_seconds() ) +'\n')
+      print('Server 2 time       : ' + str(t_server_2) + " | RTT to server2 (sec): " + str(rtt_2))
+      # print("RTT to server2 (sec): " + str(rtt_2) )
 
-      print("Current (local) time: " + str(t_send_3) )
-      print('Server 3 time       : ' + str(t_server_3) )
-      print("RTT to server3 (sec): " + str(rtt_3) )
-      print("Diff 3 (sec)        : " + str( (t_send_3 - t_server_3_corrected).total_seconds() ) +'\n')
+      print('Server 3 time       : ' + str(t_server_3) + " | RTT to server3 (sec): " + str(rtt_3))
+      # print("RTT to server3 (sec): " + str(rtt_3) )
 
-      print("Current (local) time: " + str(t_send_4) )
-      print('Server 4 time       : ' + str(t_server_4) )
-      print("RTT to server4 (sec): " + str(rtt_4) )
-      print("Diff 4 (sec)        : " + str( (t_send_4 - t_server_4_corrected).total_seconds() ) +'\n')
+      print('Server 4 time       : ' + str(t_server_4) + " | RTT to server4 (sec): " + str(rtt_4))
+      # print("RTT to server4 (sec): " + str(rtt_4) )
 
-      print("Current (local) time: " + str(t_send_5) )
-      print('Server 5 time       : ' + str(t_server_5) )
-      print("RTT to server5 (sec): " + str(rtt_5) )
-      print("Diff 5 (sec)        : " + str( (t_send_5 - t_server_5_corrected).total_seconds() ) +'\n')
+      print('Server 5 time       : ' + str(t_server_5) + " | RTT to server5 (sec): " + str(rtt_5))
+      # print("RTT to server5 (sec): " + str(rtt_5) )
 
+      print("Updated time        : " + str(t_update) + '\n')
       print("******************************\n")
+
     # some problem seding data?
     except socket.error as e:
       print ('Error Code: ' + str(e[0]) + ' Message ' + e[1])
@@ -122,11 +133,28 @@ def sync():
     except KeyboardInterrupt:
       break
 
-if __name__ == "__main__":
-  sync()
-  print("***** Marzullo *****")
-  test_list = ( (-13.0,-11.0),(-6.2,-6.0),(-2.4,-2.2),(4.8,5.0),(6.0,6.4))
+def calc_marzullo(ts1, ts2, ts3, ts4, ts5, 
+                  rtt1, rtt2, rtt3, rtt4, rtt5):
+  '''
+    Takes in all of the server times and round trip times, 
+    then inputs them into the Marzullo algorithm to get a 
+    result. The final range is returned as a tuple
+  '''
+  test_list = ((unix_time(ts1-rtt1),unix_time(ts1+rtt1)),
+               (unix_time(ts2-rtt2),unix_time(ts2+rtt2)),
+               (unix_time(ts3-rtt3),unix_time(ts3+rtt3)),
+               (unix_time(ts4-rtt4),unix_time(ts4+rtt4)),
+               (unix_time(ts5-rtt5),unix_time(ts5+rtt5)))
   result = marzullo.marzullo_algorithm(test_list)
-  print(result)
+  return result
+
+def unix_time(dt):
+    epoch = datetime(1970,1,1)
+    delta = dt - epoch
+    return delta.total_seconds()
+
+
+if __name__ == "__main__":
+  sync()  
 
   print('Program Complete')
