@@ -150,7 +150,6 @@ def calc_marzullo(ts1, ts2, ts3, ts4, ts5,
                (unix_time(ts3-rtt3),unix_time(ts3+rtt3)),
                (unix_time(ts4-rtt4),unix_time(ts4+rtt4)),
                (unix_time(ts5-rtt5),unix_time(ts5+rtt5)))
-
   result = marzullo.marzullo_algorithm(test_list)
   return result
 
@@ -160,10 +159,10 @@ def unix_time(dt):
     time format (floating point number).
   '''
 
-    epoch = datetime.utcfromtimestamp(0)
-    # need the timedelta to offset the values back to normal
-    delta = (dt - epoch) + timedelta(hours=7)
-    return delta.total_seconds()
+  epoch = datetime.utcfromtimestamp(0)
+  # need the timedelta to offset the values back to normal
+  delta = (dt - epoch) + timedelta(hours=7)
+  return delta.total_seconds()
 
 
 if __name__ == "__main__":
