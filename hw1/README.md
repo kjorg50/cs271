@@ -9,3 +9,6 @@ Queries multiple time servers around the world and uses the responses to synchro
 ## Usage
 
 To run the program, use `python clock_syc.py`
+
+### Note
+The `clock_sync.py`,`marzullo.py`, and my report are contained in the turnin zip file
